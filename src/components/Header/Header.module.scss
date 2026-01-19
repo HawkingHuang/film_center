@@ -1,0 +1,40 @@
+:global(.container) {
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 65px;
+    padding: 10px 24px;
+    box-sizing: border-box;
+
+    .title {
+      flex-shrink: 0;
+      font-size: 2rem;
+      font-weight: 800;
+      text-decoration: none;
+      color: var(--color-black);
+    }
+
+    .form {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      height: 65%;
+      border-radius: 4px;
+
+      .input {
+        width: 50%;
+        border-radius: 4px;
+        padding: 4px;
+      }
+    }
+
+    .login {
+      flex-shrink: 0;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--color-black);
+    }
+  }
+}
