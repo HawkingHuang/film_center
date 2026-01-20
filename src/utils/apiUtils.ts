@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "../lib/api";
 import type { TmdbResponse } from "../types/genreTypes";
+import type { MovieDetail, MovieRecommendation, CreditsResponse, VideosResponse } from "../types/movieTypes";
 
 const REQUIRED_PARAMS: Record<string, string> = {
   language: "en-US",
@@ -42,4 +43,52 @@ export const fetchMovies = async (endpoint: string, params?: Record<string, stri
     throw new Error("Failed to fetch movies");
   }
   return (await response.json()) as TmdbResponse;
+};
+
+export const fetchMovieDetail = async (movieId: string) => {
+  const url = new URL(`${API_BASE_URL}/movie/${movieId}`);
+  url.searchParams.set("api_key", getApiKey());
+  url.searchParams.set("language", "en-US");
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Failed to fetch movie details");
+  }
+  return (await response.json()) as MovieDetail;
+};
+
+export const fetchRecommendations = async (movieId: string) => {
+  const url = new URL(`${API_BASE_URL}/movie/${movieId}/recommendations`);
+  url.searchParams.set("api_key", getApiKey());
+  url.searchParams.set("language", "en-US");
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Failed to fetch recommendations");
+  }
+  return (await response.json()) as { results: MovieRecommendation[] };
+};
+
+export const fetchCredits = async (movieId: string) => {
+  const url = new URL(`${API_BASE_URL}/movie/${movieId}/credits`);
+  url.searchParams.set("api_key", getApiKey());
+  url.searchParams.set("language", "en-US");
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Failed to fetch credits");
+  }
+  return (await response.json()) as CreditsResponse;
+};
+
+export const fetchVideos = async (movieId: string) => {
+  const url = new URL(`${API_BASE_URL}/movie/${movieId}/videos`);
+  url.searchParams.set("api_key", getApiKey());
+  url.searchParams.set("language", "en-US");
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Failed to fetch videos");
+  }
+  return (await response.json()) as VideosResponse;
 };
