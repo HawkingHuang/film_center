@@ -6,13 +6,15 @@ import type { NavigationOptions } from "swiper/types";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ThickArrowLeftIcon, ThickArrowRightIcon } from "@radix-ui/react-icons";
+import { Link } from "react-router-dom";
 import { Skeleton } from "@radix-ui/themes";
-import type { TmdbResponse, GenreRowProps } from "../../types/genreTypes";
-import { API_BASE_URL, IMAGE_BASE_URL } from "../../lib/api";
+import type { GenreRowProps } from "../../types/genreTypes";
+import { IMAGE_BASE_URL } from "../../lib/api";
+import { fetchMovies } from "../../utils/apiUtils";
 import styles from "./Genre.module.scss";
 
 const GENRES = [
-  { key: "trending", title: "Trending", endpoint: "/trending/all/day" },
+  { key: "trending", title: "Trending", endpoint: "/trending/movie/day" },
   { key: "action", title: "Action", withGenres: 28 },
   { key: "drama", title: "Drama", withGenres: 18 },
   { key: "comedy", title: "Comedy", withGenres: 35 },
@@ -20,49 +22,6 @@ const GENRES = [
   { key: "science-fiction", title: "Science Fiction", withGenres: 878 },
   { key: "horror", title: "Horror", withGenres: 27 },
 ];
-
-const REQUIRED_PARAMS = {
-  language: "en-US",
-  sort_by: "popularity.desc",
-  page: "1",
-};
-
-const getRandomPage = (max = 10) => String(Math.floor(Math.random() * max) + 1);
-
-const getApiKey = () => {
-  const key = import.meta.env.VITE_TMDB_API_KEY as string | undefined;
-  if (!key) {
-    throw new Error("Missing VITE_TMDB_API_KEY");
-  }
-  return key;
-};
-
-const buildUrl = (endpoint: string, params?: Record<string, string>) => {
-  const url = new URL(`${API_BASE_URL}${endpoint}`);
-  const apiKey = getApiKey();
-  url.searchParams.set("api_key", apiKey);
-  Object.entries(REQUIRED_PARAMS).forEach(([key, value]) => {
-    if (key === "page") {
-      url.searchParams.set(key, getRandomPage(10));
-    } else {
-      url.searchParams.set(key, value);
-    }
-  });
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
-    });
-  }
-  return url.toString();
-};
-
-const fetchMovies = async (endpoint: string, params?: Record<string, string>) => {
-  const response = await fetch(buildUrl(endpoint, params));
-  if (!response.ok) {
-    throw new Error("Failed to fetch movies");
-  }
-  return (await response.json()) as TmdbResponse;
-};
 
 function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
   const prevRef = useRef<HTMLButtonElement | null>(null);
@@ -159,17 +118,35 @@ function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
               const titleText = movie.title ?? movie.name ?? "Untitled";
               return (
                 <SwiperSlide key={movie.id} className={styles.slide}>
-                  <div className={styles.card}>
-                    {imageUrl ? (
-                      <>
-                        {!preloaded && <Skeleton className={styles.skeleton} aria-hidden />}
-                        {preloaded && <img className={styles.poster} src={imageUrl} alt={titleText} />}
-                      </>
-                    ) : (
-                      <div className={styles.posterFallback} />
-                    )}
-                    <div className={styles.cardTitle}>{titleText}</div>
-                  </div>
+                  <Link to={`/movies/${movie.id}`} className={styles.cardLink}>
+                    <div className={styles.card}>
+                      {imageUrl ? (
+                        <>
+                          {!preloaded && <Skeleton className={styles.skeleton} aria-hidden />}
+                          {preloaded && (
+                            <img
+                              className={styles.poster}
+                              src={imageUrl}
+                              alt={titleText}
+                              onLoad={(e) => {
+                                const el = e.currentTarget as HTMLImageElement;
+                                el.style.opacity = "1";
+                                el.style.transform = "translateY(0)";
+                              }}
+                              onError={(e) => {
+                                const el = e.currentTarget as HTMLImageElement;
+                                el.style.opacity = "1";
+                                el.style.transform = "translateY(0)";
+                              }}
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <div className={styles.posterFallback} />
+                      )}
+                      <div className={styles.cardTitle}>{titleText}</div>
+                    </div>
+                  </Link>
                 </SwiperSlide>
               );
             })}
