@@ -9,7 +9,7 @@ import { ThickArrowLeftIcon, ThickArrowRightIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@radix-ui/themes";
 import type { GenreRowProps } from "../../types/genreTypes";
-import { IMAGE_BASE_URL } from "../../lib/api";
+import { BACKDROP_BASE_URL } from "../../lib/api";
 import { fetchMovies } from "../../utils/apiUtils";
 import styles from "./Genre.module.scss";
 
@@ -42,7 +42,7 @@ function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
     return movies
       .map((m) => m.backdrop_path ?? m.poster_path)
       .filter((p): p is string => Boolean(p))
-      .map((p) => `${IMAGE_BASE_URL}${p}`);
+      .map((p) => `${BACKDROP_BASE_URL}${p}`);
   }, [movies]);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
           >
             {movies.map((movie) => {
               const imagePath = movie.backdrop_path ?? movie.poster_path;
-              const imageUrl = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : undefined;
+              const imageUrl = imagePath ? `${BACKDROP_BASE_URL}${imagePath}` : undefined;
               const titleText = movie.title ?? movie.name ?? "Untitled";
               return (
                 <SwiperSlide key={movie.id} className={styles.slide}>
