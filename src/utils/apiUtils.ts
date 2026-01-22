@@ -2,6 +2,7 @@ import { API_BASE_URL } from "../lib/api";
 import type { TmdbResponse } from "../types/genreTypes";
 import type { MovieDetail, MovieRecommendation, CreditsResponse, VideosResponse } from "../types/movieTypes";
 import type { ActorDetail, ActorCreditsResponse } from "../types/actorTypes";
+import type { SearchMultiResponse } from "../types/searchTypes";
 
 const REQUIRED_PARAMS: Record<string, string> = {
   sort_by: "popularity.desc",
@@ -127,4 +128,17 @@ export const fetchActorCredits = async (personId: string) => {
     throw new Error("Failed to fetch actor credits");
   }
   return (await response.json()) as ActorCreditsResponse;
+};
+
+export const fetchSearchMulti = async (query: string, page = 1) => {
+  const url = new URL(`${API_BASE_URL}/search/multi`);
+  attachAuthParams(url);
+  url.searchParams.set("query", query);
+  url.searchParams.set("page", String(page));
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Failed to fetch search results");
+  }
+  return (await response.json()) as SearchMultiResponse;
 };

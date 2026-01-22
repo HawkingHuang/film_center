@@ -1,0 +1,115 @@
+.search {
+  padding: 24px 0 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--color-black);
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.6);
+      margin: 0;
+    }
+  }
+
+  .state {
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.6);
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .resultsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cardLink {
+    text-decoration: none;
+    color: inherit;
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .poster,
+      .posterFallback {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 8px;
+      }
+
+      .poster {
+        object-fit: cover;
+        display: block;
+      }
+
+      .posterFallback {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .cardTitle {
+        font-size: 18px;
+        font-weight: 600;
+        padding: 0 0 4px 4px;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .paginationWrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+  }
+}
+
+:global(.pagination) {
+  --pagination-color: var(--color-black);
+  --pagination-bg: rgba(0, 0, 0, 0.08);
+  --pagination-hover-bg: rgba(0, 0, 0, 0.18);
+  --pagination-hover-color: var(--color-black);
+  --pagination-active-bg: rgba(0, 0, 0, 0.2);
+  --pagination-active-color: var(--color-black);
+  --pagination-disabled-color: rgba(0, 0, 0, 0.35);
+  --pagination-border-radius: 999px;
+  --pagination-padding-y: 6px;
+  --pagination-padding-x: 12px;
+  --pagination-font-weight: 600;
+  --pagination-item-margin-x: 4px;
+}
+
+@media (max-width: 1100px) {
+  .search {
+    .resultsGrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .search {
+    .resultsGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
