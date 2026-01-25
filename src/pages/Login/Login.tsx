@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import * as Toast from "@radix-ui/react-toast";
 import AuthLayout from "../../components/AuthLayout/AuthLayout";
-import supabase from "../../services/supabase";
+import { signInWithPassword } from "../../utils/authUtils";
 import styles from "./Login.module.scss";
 
 function Login() {
@@ -10,8 +9,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [toastOpen, setToastOpen] = useState(false);
-
   const handleConfirm = async () => {
     setError(null);
     if (!email.trim() || !password.trim()) {
@@ -19,7 +16,7 @@ function Login() {
       return;
     }
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { error: authError } = await signInWithPassword({
       email: email.trim(),
       password: password.trim(),
     });
@@ -29,8 +26,15 @@ function Login() {
       return;
     }
 
-    setToastOpen(true);
-    window.setTimeout(() => navigate("/login"), 800);
+    navigate("/", {
+      replace: true,
+      state: {
+        toast: {
+          title: "Successfully Logged In",
+          description: "Welcome back.",
+        },
+      },
+    });
   };
 
   return (
@@ -57,10 +61,6 @@ function Login() {
       </div>
       {error && <div className={styles.error}>{error}</div>}
 
-      <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
-        <Toast.Title className="toastTitle">Successfully Logged In</Toast.Title>
-        <Toast.Description className="toastDescription">Welcome back.</Toast.Description>
-      </Toast.Root>
     </AuthLayout>
   );
 }

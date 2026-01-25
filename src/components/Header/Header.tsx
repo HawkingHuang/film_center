@@ -1,16 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { NavigationMenu } from "radix-ui";
+import * as Toast from "@radix-ui/react-toast";
 import styles from "./Header.module.scss";
-import { EnterIcon, PersonIcon } from "@radix-ui/react-icons";
+import { EnterIcon, PersonIcon, CaretDownIcon } from "@radix-ui/react-icons";
 import logo from "../../assets/images/filmhub_logo.png";
 import type { RootState } from "../../store";
+import { signOut } from "../../utils/authUtils";
 
 function Header() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const username = user?.email?.split("@")[0] ?? "Account";
+  const [toastOpen, setToastOpen] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,6 +24,12 @@ function Header() {
     } else {
       navigate("/search");
     }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    setToastOpen(true);
+    navigate("/");
   };
 
   return (
@@ -32,10 +42,27 @@ function Header() {
           <input className={styles.input} type="text" placeholder="Enter keywords..." value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search movies" />
         </form>
         {isAuthenticated ? (
-          <Link className={styles.login} to="/user">
-            <PersonIcon />
-            {username}
-          </Link>
+          <NavigationMenu.Root className={styles.userMenuRoot}>
+            <NavigationMenu.List className={styles.userMenuList}>
+              <NavigationMenu.Item className={styles.userMenuItem}>
+                <NavigationMenu.Trigger className={`${styles.login} ${styles.userMenuTrigger}`}>
+                  <PersonIcon />
+                  {username}
+                  <CaretDownIcon className={styles.caretDown} aria-hidden />
+                </NavigationMenu.Trigger>
+                <NavigationMenu.Content className={styles.userMenuContent}>
+                  <NavigationMenu.Link asChild>
+                    <Link className={styles.userMenuLink} to="/user">
+                      Favorites
+                    </Link>
+                  </NavigationMenu.Link>
+                  <button className={styles.userMenuButton} type="button" onClick={handleLogout}>
+                    Log Out
+                  </button>
+                </NavigationMenu.Content>
+              </NavigationMenu.Item>
+            </NavigationMenu.List>
+          </NavigationMenu.Root>
         ) : (
           <Link className={styles.login} to="/login">
             <EnterIcon />
@@ -43,6 +70,10 @@ function Header() {
           </Link>
         )}
       </header>
+      <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
+        <Toast.Title className="toastTitle">Successfully Logged Out</Toast.Title>
+        <Toast.Description className="toastDescription">You have been signed out.</Toast.Description>
+      </Toast.Root>
     </div>
   );
 }
