@@ -1,12 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import styles from "./Header.module.scss";
-import { EnterIcon } from "@radix-ui/react-icons";
+import { EnterIcon, PersonIcon } from "@radix-ui/react-icons";
 import logo from "../../assets/images/filmhub_logo.png";
+import type { RootState } from "../../store";
 
 function Header() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const username = user?.email?.split("@")[0] ?? "Account";
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,10 +31,17 @@ function Header() {
         <form className={styles.form} onSubmit={handleSubmit}>
           <input className={styles.input} type="text" placeholder="Enter keywords..." value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search movies" />
         </form>
-        <Link className={styles.login} to="/login">
-          <EnterIcon />
-          Login
-        </Link>
+        {isAuthenticated ? (
+          <Link className={styles.login} to="/user">
+            <PersonIcon />
+            {username}
+          </Link>
+        ) : (
+          <Link className={styles.login} to="/login">
+            <EnterIcon />
+            Login
+          </Link>
+        )}
       </header>
     </div>
   );

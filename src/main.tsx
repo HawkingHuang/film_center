@@ -1,8 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import * as Toast from "@radix-ui/react-toast";
 import { Theme } from "@radix-ui/themes";
 import App from "./App.tsx";
+import { store } from "./store";
 import "./assets/styles/global.scss";
 import "@radix-ui/themes/styles.css";
 
@@ -22,9 +25,14 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <Theme>
-        <App />
-      </Theme>
+      <Toast.Provider swipeDirection="right">
+        <Theme>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </Theme>
+        <Toast.Viewport className="toastViewport" />
+      </Toast.Provider>
     </QueryClientProvider>
   </StrictMode>,
 );

@@ -1,0 +1,31 @@
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.input {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--color-black);
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
+.error {
+  color: #c92a2a;
+  font-size: 14px;
+  font-weight: 600;
+}
