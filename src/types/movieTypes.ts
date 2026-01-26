@@ -2,12 +2,20 @@ export type MovieDetail = {
   id: number;
   title: string;
   poster_path: string | null;
+  backdrop_path: string | null;
   overview: string;
   release_date: string;
   runtime: number | null;
   genres: { id: number; name: string }[];
   imdb_id: string;
   imdb_rating: string | null;
+};
+
+export type FavoritePayload = {
+  movie_id: number;
+  title: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
 };
 
 export type MovieRecommendation = {

@@ -84,3 +84,33 @@ h6 {
   font-size: 13px;
   color: var(--color-black);
 }
+
+.toastRoot[data-state="open"] {
+  animation: toastIn 200ms ease-out;
+}
+
+.toastRoot[data-state="closed"] {
+  animation: toastOut 200ms ease-in;
+}
+
+@keyframes toastIn {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+}

@@ -1,15 +1,28 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import * as Toast from "@radix-ui/react-toast";
 import { POSTER_BASE_URL, PROFILE_BASE_URL } from "../../lib/api";
 import { fetchMovieDetail, fetchRecommendations, fetchCredits, fetchVideos } from "../../utils/apiUtils";
+import { addToFavorites, checkIsFavorited, deleteFromFavorites } from "../../utils/favoritesUtils";
 import { formatRuntime } from "../../utils/commonUtils";
 import type { MovieRecommendation } from "../../types/movieTypes";
+import type { RootState } from "../../store";
+import type { ToastPayload } from "../../types/toastTypes";
 import styles from "./Movie.module.scss";
 import starIcon from "../../assets/images/star.svg";
 
 function Movie() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastContent, setToastContent] = useState<ToastPayload | null>(null);
+  const movieId = useMemo(() => {
+    const parsed = Number(id);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [id]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["movie", id],
@@ -36,6 +49,50 @@ function Movie() {
     if (!data?.poster_path) return null;
     return `${POSTER_BASE_URL}${data.poster_path}`;
   }, [data?.poster_path]);
+
+  const { data: isFavorited } = useQuery({
+    queryKey: ["favorites", "isFavorited", movieId],
+    queryFn: () => checkIsFavorited(movieId as number),
+    enabled: Boolean(movieId) && isAuthenticated,
+  });
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async () => {
+      if (!movieId || !data) {
+        return null;
+      }
+
+      if (isFavorited) {
+        return deleteFromFavorites(movieId);
+      }
+
+      return addToFavorites({
+        movie_id: movieId,
+        title: data.title,
+        poster_path: data.poster_path ?? null,
+        backdrop_path: data.backdrop_path ?? null,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorites", "isFavorited", movieId] });
+      if (isFavorited) {
+        setToastContent({ title: "Successfully Removed", description: data?.title });
+      } else {
+        setToastContent({ title: "Successfully Added", description: data?.title });
+      }
+      setToastOpen(true);
+    },
+    onError: (error) => {
+      const err = error as { code?: string };
+      if (err?.code === "23505") {
+        setToastContent({ title: "Already in favorites" });
+      } else {
+        setToastContent({ title: "Something went wrong" });
+      }
+      setToastOpen(true);
+      queryClient.invalidateQueries({ queryKey: ["favorites", "isFavorited", movieId] });
+    },
+  });
 
   const recommendations = useMemo(() => {
     return recommendationsData?.results ?? [];
@@ -83,8 +140,18 @@ function Movie() {
       <section className={styles.topBlock}>
         <div className={styles.posterWrap}>
           {posterUrl ? <img className={styles.poster} src={posterUrl} alt={data.title} /> : <div className={styles.posterFallback}>No poster</div>}
-          <button className={styles.addButton} type="button">
-            Add to Favorites
+          <button
+            className={`${styles.addButton} ${isFavorited ? styles.favorited : ""}`}
+            type="button"
+            disabled={!isAuthenticated || toggleFavoriteMutation.isPending}
+            onClick={() => {
+              if (!isAuthenticated || toggleFavoriteMutation.isPending) {
+                return;
+              }
+              toggleFavoriteMutation.mutate();
+            }}
+          >
+            {!isAuthenticated ? "Login to Favorite" : toggleFavoriteMutation.isPending ? "Saving..." : isFavorited ? "Remove from Favorites" : "Add to Favorites"}
           </button>
         </div>
         <div className={styles.info}>
@@ -187,6 +254,12 @@ function Movie() {
           })}
         </div>
       </section>
+      {toastContent && (
+        <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
+          <Toast.Title className="toastTitle">{toastContent.title}</Toast.Title>
+          {toastContent.description && <Toast.Description className="toastDescription">{toastContent.description}</Toast.Description>}
+        </Toast.Root>
+      )}
     </div>
   );
 }

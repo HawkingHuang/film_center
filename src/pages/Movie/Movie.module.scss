@@ -58,6 +58,20 @@
       &:hover {
         background: #fcc419;
       }
+
+      &:disabled {
+        cursor: not-allowed;
+        box-shadow: none;
+        background: rgba(0, 0, 0, 0.15);
+      }
+    }
+
+    .addButton.favorited {
+      background: #f03e3e;
+
+      &:hover {
+        background: #e03131;
+      }
     }
   }
 
