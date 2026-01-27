@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/routeGuards/ProtectedRoute";
@@ -16,14 +16,67 @@ import { clearSession, setSession } from "./store/authSlice";
 import type { AppDispatch } from "./store";
 import AppLayout from "./ui/AppLayout";
 
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "/search",
+        element: <Search />,
+      },
+      {
+        path: "/genres/:id",
+        element: <Genre />,
+      },
+      {
+        path: "/login",
+        element: (
+          <PublicOnlyRoute>
+            <Login />
+          </PublicOnlyRoute>
+        ),
+      },
+      {
+        path: "/signup",
+        element: (
+          <PublicOnlyRoute>
+            <Signup />
+          </PublicOnlyRoute>
+        ),
+      },
+      {
+        path: "/movies/:id",
+        element: <Movie />,
+      },
+      {
+        path: "/actors/:id",
+        element: <Actor />,
+      },
+      {
+        path: "/user",
+        element: (
+          <ProtectedRoute>
+            <User />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+]);
+
 function App() {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     let isMounted = true;
 
-    const bootstrap = async () => {
+    const initAuth = async () => {
       const { data } = await supabase.auth.getSession();
+
       if (!isMounted) {
         return;
       }
@@ -35,7 +88,7 @@ function App() {
       }
     };
 
-    bootstrap();
+    initAuth();
 
     const {
       data: { subscription },
@@ -52,62 +105,6 @@ function App() {
       subscription.unsubscribe();
     };
   }, [dispatch]);
-
-  const router = useMemo(
-    () =>
-      createBrowserRouter([
-        {
-          element: <AppLayout />,
-          children: [
-            {
-              path: "/",
-              element: <Home />,
-            },
-            {
-              path: "/search",
-              element: <Search />,
-            },
-            {
-              path: "/genres/:id",
-              element: <Genre />,
-            },
-            {
-              path: "/login",
-              element: (
-                <PublicOnlyRoute>
-                  <Login />
-                </PublicOnlyRoute>
-              ),
-            },
-            {
-              path: "/signup",
-              element: (
-                <PublicOnlyRoute>
-                  <Signup />
-                </PublicOnlyRoute>
-              ),
-            },
-            {
-              path: "/movies/:id",
-              element: <Movie />,
-            },
-            {
-              path: "/actors/:id",
-              element: <Actor />,
-            },
-            {
-              path: "/user",
-              element: (
-                <ProtectedRoute>
-                  <User />
-                </ProtectedRoute>
-              ),
-            },
-          ],
-        },
-      ]),
-    [],
-  );
 
   return <RouterProvider router={router} />;
 }
