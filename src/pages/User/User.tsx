@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { Tabs } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import ResponsivePagination from "react-responsive-pagination";
-import "react-responsive-pagination/themes/minimal.css";
-import { Tabs } from "@radix-ui/themes";
 import { POSTER_BASE_URL } from "../../lib/api";
 import type { RootState } from "../../store";
 import type { RecentMovie } from "../../types/movieTypes";
 import { fetchFavorites } from "../../utils/favoritesUtils";
-import styles from "./User.module.scss";
 import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
+import styles from "./User.module.scss";
+import "react-responsive-pagination/themes/minimal.css";
+import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 
 const PAGE_SIZE = 20;
 const RECENT_KEY = "recently_viewed";
@@ -50,6 +51,10 @@ function User() {
 
   const recentMovies = useMemo(() => getRecentFromStorage(), [tab]);
 
+  if (isLoading) {
+    return <FullPageSpinner />;
+  }
+
   return (
     <div className="container">
       <section className={styles.userPage}>
@@ -64,7 +69,6 @@ function User() {
           </Tabs.List>
 
           <Tabs.Content className={styles.tabContent} value="favorites">
-            {isLoading && <div className={styles.state}>Loading favorites...</div>}
             {isError && <div className={styles.state}>Unable to load favorites</div>}
             {!isLoading && !isError && favorites.length === 0 && <div className={styles.state}>No favorites yet</div>}
 

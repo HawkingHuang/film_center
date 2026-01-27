@@ -8,6 +8,7 @@ import styles from "./Actor.module.scss";
 import { CrossCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Select } from "@radix-ui/themes";
 import * as Dialog from "@radix-ui/react-dialog";
+import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 
 function Actor() {
   const { id } = useParams();
@@ -73,11 +74,7 @@ function Actor() {
   const [isBioOpen, setIsBioOpen] = useState(false);
 
   if (isLoading) {
-    return (
-      <div className="container">
-        <div className={styles.state}>Loading actor...</div>
-      </div>
-    );
+    return <FullPageSpinner />;
   }
 
   if (isError || !actor) {

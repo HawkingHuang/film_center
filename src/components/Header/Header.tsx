@@ -1,13 +1,13 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { NavigationMenu } from "radix-ui";
-import * as Toast from "@radix-ui/react-toast";
-import styles from "./Header.module.scss";
 import { EnterIcon, PersonIcon, CaretDownIcon } from "@radix-ui/react-icons";
+import * as Toast from "@radix-ui/react-toast";
+import { NavigationMenu } from "radix-ui";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/filmhub_logo.png";
 import type { RootState } from "../../store";
 import { signOut } from "../../utils/authUtils";
+import styles from "./Header.module.scss";
 
 function Header() {
   const [query, setQuery] = useState("");

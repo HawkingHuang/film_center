@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import * as Toast from "@radix-ui/react-toast";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Background from "../components/Background/Background";
 import Header from "../components/Header/Header";
 import type { ToastPayload } from "../types/toastTypes";

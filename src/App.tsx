@@ -1,20 +1,20 @@
 import { useEffect, useMemo } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import Home from "./pages/Home/Home";
-import Search from "./pages/Search/Search";
-import Login from "./pages/Login/Login";
-import Signup from "./pages/Signup/Signup";
-import Movie from "./pages/Movie/Movie";
-import Actor from "./pages/Actor/Actor";
-import User from "./pages/User/User";
-import Genre from "./pages/Genre/Genre";
-import AppLayout from "./ui/AppLayout";
-import supabase from "./services/supabase";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./components/routeGuards/ProtectedRoute";
 import PublicOnlyRoute from "./components/routeGuards/PublicOnlyRoute";
+import Actor from "./pages/Actor/Actor";
+import Genre from "./pages/Genre/Genre";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Movie from "./pages/Movie/Movie";
+import Search from "./pages/Search/Search";
+import Signup from "./pages/Signup/Signup";
+import User from "./pages/User/User";
+import supabase from "./services/supabase";
 import { clearSession, setSession } from "./store/authSlice";
 import type { AppDispatch } from "./store";
+import AppLayout from "./ui/AppLayout";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();

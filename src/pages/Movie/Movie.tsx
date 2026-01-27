@@ -12,6 +12,7 @@ import type { RootState } from "../../store";
 import type { ToastPayload } from "../../types/toastTypes";
 import styles from "./Movie.module.scss";
 import starIcon from "../../assets/images/star.svg";
+import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 
 function Movie() {
   const { id } = useParams();
@@ -143,11 +144,7 @@ function Movie() {
   }, [data, movieId]);
 
   if (isLoading) {
-    return (
-      <div className="container">
-        <div className={styles.state}>Loading movie...</div>
-      </div>
-    );
+    return <FullPageSpinner />;
   }
 
   if (isError || !data) {

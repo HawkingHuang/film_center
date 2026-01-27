@@ -8,6 +8,7 @@ import { fetchSearchMulti } from "../../utils/apiUtils";
 import type { SearchMultiResult } from "../../types/searchTypes";
 import styles from "./Search.module.scss";
 import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
+import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,13 +35,16 @@ function Search() {
     setSearchParams(nextParams);
   };
 
+  if (isLoading) {
+    return <FullPageSpinner />;
+  }
+
   return (
     <div className="container">
       <section className={styles.search}>
         <div className={styles.header}>{query && <p className={styles.subtitle}>Results for “{query}”</p>}</div>
 
         {!query && <div className={styles.state}>Enter a keyword to start searching.</div>}
-        {isLoading && <div className={styles.state}>Loading results...</div>}
         {isError && <div className={styles.state}>Unable to load results.</div>}
         {!isLoading && !isError && query && visibleResults.length === 0 && <div className={styles.state}>No results found.</div>}
 
