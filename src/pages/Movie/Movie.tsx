@@ -6,8 +6,8 @@ import * as Toast from "@radix-ui/react-toast";
 import { POSTER_BASE_URL, PROFILE_BASE_URL } from "../../lib/api";
 import { fetchMovieDetail, fetchRecommendations, fetchCredits, fetchVideos } from "../../utils/apiUtils";
 import { addToFavorites, checkIsFavorited, deleteFromFavorites } from "../../utils/favoritesUtils";
-import { formatRuntime } from "../../utils/commonUtils";
-import type { MovieRecommendation } from "../../types/movieTypes";
+import { formatRuntime, writeInRecentViewToLocalStorage } from "../../utils/commonUtils";
+import type { RecentMovie, MovieRecommendation } from "../../types/movieTypes";
 import type { RootState } from "../../store";
 import type { ToastPayload } from "../../types/toastTypes";
 import styles from "./Movie.module.scss";
@@ -124,24 +124,14 @@ function Movie() {
   useEffect(() => {
     if (!data || !movieId) return;
 
-    const payload = {
+    const payload: RecentMovie = {
       movie_id: movieId,
       title: data.title,
       poster_path: data.poster_path ?? null,
       backdrop_path: data.backdrop_path ?? null,
     };
 
-    try {
-      const key = "recently_viewed";
-      const raw = localStorage.getItem(key);
-      const parsed = raw ? JSON.parse(raw) : [];
-      const list = Array.isArray(parsed) ? parsed : [];
-      const filtered = list.filter((item: { movie_id?: number }) => item?.movie_id !== movieId);
-      const updated = [payload, ...filtered].slice(0, 8);
-      localStorage.setItem(key, JSON.stringify(updated));
-    } catch {
-      // ignore storage errors
-    }
+    writeInRecentViewToLocalStorage(payload);
   }, [data, movieId]);
 
   if (isLoading) {

@@ -3,30 +3,16 @@ import { Tabs } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { PAGE_SIZE } from "../../lib/constants";
 import ResponsivePagination from "react-responsive-pagination";
 import { POSTER_BASE_URL } from "../../lib/api";
 import type { RootState } from "../../store";
-import type { RecentMovie } from "../../types/movieTypes";
 import { fetchFavorites } from "../../utils/favoritesUtils";
 import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
 import styles from "./User.module.scss";
 import "react-responsive-pagination/themes/minimal.css";
 import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
-
-const PAGE_SIZE = 20;
-const RECENT_KEY = "recently_viewed";
-
-const getRecentFromStorage = (): RecentMovie[] => {
-  try {
-    const raw = localStorage.getItem(RECENT_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.slice(0, 8);
-  } catch {
-    return [];
-  }
-};
+import { readRecentViewFromLocalStorage } from "../../utils/commonUtils";
 
 function User() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -52,7 +38,7 @@ function User() {
     return favorites.slice(start, start + PAGE_SIZE);
   }, [favorites, pageSafe]);
 
-  const recentMovies = useMemo(() => getRecentFromStorage(), [tab]);
+  const recentMovies = useMemo(() => readRecentViewFromLocalStorage(), [tab]);
 
   if (isLoading) {
     return <FullPageSpinner />;
