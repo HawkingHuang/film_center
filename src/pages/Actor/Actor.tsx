@@ -171,16 +171,16 @@ function Actor() {
             </div>
           </div>
         </div>
-        <div className={styles.creditsGrid}>
+        <div className={styles.resultsGrid}>
           {filteredCredits.length > 0 ? (
             filteredCredits.map((credit: ActorCredit) => {
               const posterPath = credit.poster_path || credit.backdrop_path || null;
               const posterUrl = posterPath ? `${POSTER_BASE_URL}${posterPath}` : null;
               return (
-                <Link key={credit.id} to={`/movies/${credit.id}`} className={styles.creditLink}>
-                  <div className={styles.creditCard}>
-                    {posterUrl ? <img className={styles.creditPoster} src={posterUrl} alt={credit.title} /> : <div className={styles.creditPosterFallback}>No poster</div>}
-                    <div className={styles.creditTitle}>{credit.title}</div>
+                <Link key={credit.id} to={`/movies/${credit.id}`} className={styles.cardLink}>
+                  <div className={styles.card}>
+                    {posterUrl ? <img className={styles.poster} src={posterUrl} alt={credit.title} /> : <div className={styles.posterFallback}>No poster</div>}
+                    <div className={styles.cardTitle}>{credit.title}</div>
                     <div className={styles.creditMeta}>{credit.character || "—"}</div>
                   </div>
                 </Link>

@@ -316,42 +316,7 @@
     margin-bottom: 16px;
   }
 
-  .recommendationRow {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-
-    .recommendationCard {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      border-radius: 10px;
-      box-shadow: 0 2px 30px rgba(0, 0, 0, 0.2);
-      transition: box-shadow 300ms ease-in-out;
-
-      &:hover {
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-      }
-
-      .recommendationPoster {
-        width: 100%;
-        aspect-ratio: 2 / 3;
-        border-radius: 10px 10px 0 0;
-        background: rgba(0, 0, 0, 0.08);
-      }
-
-      .recommendationTitle {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--color-black);
-        padding: 0 0 4px 4px;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-  }
+  @import "../../assets/styles/listLayout.module";
 }
 
 @media (max-width: 1100px) {
@@ -368,13 +333,13 @@
     grid-template-columns: 1fr;
   }
 
-  .recommendations .recommendationRow {
+  .recommendations .resultsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 700px) {
-  .recommendations .recommendationRow {
+  .recommendations .resultsGrid {
     grid-template-columns: 1fr;
   }
 }

@@ -253,25 +253,25 @@ function Movie() {
 
       <section className={styles.recommendations}>
         <h2 className={styles.recommendationsTitle}>Recommendations</h2>
-        <div className={styles.recommendationRow}>
+        <div className={styles.resultsGrid}>
           {(recommendations.length > 0 ? recommendations : Array.from({ length: 4 })).map((item, index) => {
             const rec = (item as MovieRecommendation | undefined) ?? undefined;
             const recPoster = rec?.poster_path ? `${POSTER_BASE_URL}${rec.poster_path}` : null;
             if (rec && rec.id) {
               return (
-                <Link key={rec.id} to={`/movies/${rec.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                  <div className={styles.recommendationCard}>
-                    {recPoster ? <img className={styles.recommendationPoster} src={recPoster} alt={rec.title ?? "Recommendation"} /> : <div className={styles.recommendationPoster} />}
-                    <div className={styles.recommendationTitle}>{rec.title ?? "Recommendation"}</div>
+                <Link key={rec.id} to={`/movies/${rec.id}`} className={styles.cardLink}>
+                  <div className={styles.card}>
+                    {recPoster ? <img className={styles.poster} src={recPoster} alt={rec.title ?? "Recommendation"} /> : <div className={styles.posterFallback} />}
+                    <div className={styles.cardTitle}>{rec.title ?? "Recommendation"}</div>
                   </div>
                 </Link>
               );
             }
 
             return (
-              <div key={rec?.id ?? index} className={styles.recommendationCard}>
-                {recPoster ? <img className={styles.recommendationPoster} src={recPoster} alt={rec?.title ?? "Recommendation"} /> : <div className={styles.recommendationPoster} />}
-                <div className={styles.recommendationTitle}>{rec?.title ?? "Recommendation"}</div>
+              <div key={rec?.id ?? index} className={styles.card}>
+                {recPoster ? <img className={styles.poster} src={recPoster} alt={rec?.title ?? "Recommendation"} /> : <div className={styles.posterFallback} />}
+                <div className={styles.cardTitle}>{rec?.title ?? "Recommendation"}</div>
               </div>
             );
           })}

@@ -224,65 +224,13 @@
     height: 18px;
   }
 
-  .creditsGrid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-  }
-
-  .creditLink {
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .creditCard {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border-radius: 10px;
-    box-shadow: 0 2px 30px rgba(0, 0, 0, 0.2);
-    transition: box-shadow 300ms ease-in-out;
-
-    &:hover {
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  .creditPoster {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    border-radius: 10px 10px 0 0;
-    object-fit: cover;
-  }
-
-  .creditPosterFallback {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(0, 0, 0, 0.6);
-    font-weight: 600;
-  }
-
-  .creditTitle {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--color-black);
-    padding: 0 0 0 4px;
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
   .creditMeta {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.6);
     padding: 0 0 4px 4px;
   }
+
+  @import "../../assets/styles/listLayout.module";
 }
 
 /* dialog styles */
@@ -350,7 +298,7 @@
   }
 
   .creditsSection {
-    .creditsGrid {
+    .resultsGrid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -362,7 +310,7 @@
   }
 
   .creditsSection {
-    .creditsGrid {
+    .resultsGrid {
       grid-template-columns: 1fr;
     }
   }
