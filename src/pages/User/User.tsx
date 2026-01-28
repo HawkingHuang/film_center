@@ -39,8 +39,8 @@ function User() {
   }, [favorites, pageSafe]);
 
   const recentMovies = useMemo(() => {
-    if (tab !== "recent") return [];
-    readRecentViewFromLocalStorage();
+    if (!tab) return [];
+    return readRecentViewFromLocalStorage();
   }, [tab]);
 
   useEffect(() => {
