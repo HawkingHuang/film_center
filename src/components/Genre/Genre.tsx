@@ -7,21 +7,12 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { ThickArrowLeftIcon, ThickArrowRightIcon } from "@radix-ui/react-icons";
 import { Link } from "react-router-dom";
+import { GENRES } from "../../lib/constants";
 import { Skeleton } from "@radix-ui/themes";
 import type { GenreRowProps } from "../../types/genreTypes";
 import { BACKDROP_BASE_URL } from "../../lib/api";
 import { fetchMovies } from "../../utils/apiUtils";
 import styles from "./Genre.module.scss";
-
-const GENRES = [
-  { key: "trending", title: "Trending", endpoint: "/trending/movie/day" },
-  { key: "action", title: "Action", withGenres: 28 },
-  { key: "drama", title: "Drama", withGenres: 18 },
-  { key: "comedy", title: "Comedy", withGenres: 35 },
-  { key: "thriller", title: "Thriller", withGenres: 53 },
-  { key: "science-fiction", title: "Science Fiction", withGenres: 878 },
-  { key: "horror", title: "Horror", withGenres: 27 },
-];
 
 function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
   const prevRef = useRef<HTMLButtonElement | null>(null);
@@ -46,24 +37,42 @@ function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
   }, [movies]);
 
   useEffect(() => {
-    setPreloaded(false);
-    if (imageUrls.length === 0) {
-      setPreloaded(true);
-      return;
+    let cancelled = false;
+    const preloadUrls = imageUrls.slice(0, 4);
+
+    if (preloadUrls.length > 0) {
+      queueMicrotask(() => {
+        if (cancelled) return;
+        setPreloaded((prev) => (prev ? false : prev));
+      });
     }
 
-    let mounted = true;
+    if (imageUrls.length === 0) {
+      queueMicrotask(() => {
+        if (cancelled) return;
+        setPreloaded(true);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+
     let counter = 0;
     const imgs: HTMLImageElement[] = [];
 
-    const preloadUrls = imageUrls.slice(0, 4);
+    const onFinish = () => {
+      if (cancelled) return;
+      counter += 1;
+      if (counter >= preloadUrls.length) {
+        queueMicrotask(() => {
+          if (cancelled) return;
+          setPreloaded(true);
+        });
+      }
+    };
+
     preloadUrls.forEach((src) => {
       const img = new Image();
-      const onFinish = () => {
-        if (!mounted) return;
-        counter += 1;
-        if (counter >= preloadUrls.length) setPreloaded(true);
-      };
       img.onload = onFinish;
       img.onerror = onFinish;
       img.src = src;
@@ -71,10 +80,10 @@ function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
     });
 
     return () => {
-      mounted = false;
-      imgs.forEach((i) => {
-        i.onload = null;
-        i.onerror = null;
+      cancelled = true;
+      imgs.forEach((img) => {
+        img.onload = null;
+        img.onerror = null;
       });
     };
   }, [imageUrls]);
