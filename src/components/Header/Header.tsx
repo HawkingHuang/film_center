@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { EnterIcon, PersonIcon, CaretDownIcon, HeartFilledIcon, EyeOpenIcon, ExitIcon } from "@radix-ui/react-icons";
-import * as Toast from "@radix-ui/react-toast";
 import { NavigationMenu } from "radix-ui";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,7 +13,6 @@ function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const username = user?.email?.split("@")[0] ?? "Account";
-  const [toastOpen, setToastOpen] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,8 +26,16 @@ function Header() {
 
   const handleLogout = async () => {
     await signOut();
-    setToastOpen(true);
-    navigate("/");
+
+    navigate("/", {
+      replace: true,
+      state: {
+        toast: {
+          title: "Successfully Logged Out",
+          description: "You have been signed out.",
+        },
+      },
+    });
   };
 
   return (
@@ -78,10 +84,6 @@ function Header() {
           </Link>
         )}
       </header>
-      <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
-        <Toast.Title className="toastTitle">Successfully Logged Out</Toast.Title>
-        <Toast.Description className="toastDescription">You have been signed out.</Toast.Description>
-      </Toast.Root>
     </div>
   );
 }
