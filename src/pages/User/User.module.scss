@@ -1,8 +1,7 @@
+@use "../../assets/styles/mixins" as *;
+
 .userPage {
   padding: 24px 0 64px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 
   .tabsList {
     display: flex;
@@ -59,20 +58,29 @@
   }
 
   @import "../../assets/styles/listLayout.module";
-}
 
-@media (max-width: 1100px) {
-  .userPage {
-    .resultsGrid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @include respond-xl {
+    padding: 32px 0 72px;
+  }
+
+  @include respond-sm {
+    padding: 16px 0 48px;
+
+    .tabsList {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tabTrigger {
+      font-size: 13px;
+      padding: 6px 12px;
     }
   }
-}
 
-@media (max-width: 700px) {
-  .userPage {
-    .resultsGrid {
-      grid-template-columns: 1fr;
+  @include respond-xs {
+    .tabTrigger {
+      font-size: 12px;
+      padding: 6px 10px;
     }
   }
 }
