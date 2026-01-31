@@ -88,12 +88,21 @@ function Actor() {
     );
   }
 
-  const profileUrl = actor.profile_path ? `${PROFILE_BASE_URL}${actor.profile_path}` : null;
+  const profileUrl = actor.profile_path ? `${PROFILE_BASE_URL}${actor.profile_path}` : imageFallbackPortrait;
 
   return (
     <div className="container">
       <section className={styles.topSection}>
-        <div className={styles.profileWrap}>{profileUrl ? <img className={styles.profileImage} src={profileUrl} alt={actor.name} /> : <div className={styles.profileFallback}>No image</div>}</div>
+        <div className={styles.profileWrap}>
+          <img
+            className={styles.profileImage}
+            src={profileUrl}
+            alt={actor.name}
+            onError={(e) => {
+              e.currentTarget.src = imageFallbackPortrait;
+            }}
+          />
+        </div>
         <div className={styles.bioSection}>
           <h1 className={styles.actorName}>{actor.name}</h1>
           <Dialog.Root open={isBioOpen} onOpenChange={setIsBioOpen}>

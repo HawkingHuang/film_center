@@ -206,15 +206,16 @@
     }
 
     .castList {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 16px;
       margin-top: 16px;
 
       .castLink {
         text-decoration: none;
         color: inherit;
-        width: 11.5%;
+        min-width: 0;
+
         .castItem {
           display: flex;
           flex-direction: column;
@@ -287,11 +288,8 @@
 
     .info {
       .castList {
-        gap: 24px;
-
-        .castLink {
-          width: 22%;
-        }
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
       }
     }
   }
@@ -345,11 +343,8 @@
       }
 
       .castList {
+        grid-template-columns: repeat(2, 1fr);
         gap: 24px;
-
-        .castLink {
-          width: 47%;
-        }
       }
     }
   }
@@ -398,7 +393,8 @@
       }
 
       .castList {
-        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
       }
     }
   }

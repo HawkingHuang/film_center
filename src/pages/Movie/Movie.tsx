@@ -253,11 +253,18 @@ function Movie() {
 
           <div className={styles.castList}>
             {castMembers.map((member) => {
-              const profileUrl = member.profile_path ? `${PROFILE_BASE_URL}${member.profile_path}` : null;
+              const profileUrl = member.profile_path ? `${PROFILE_BASE_URL}${member.profile_path}` : imageFallbackPortrait;
               return (
                 <Link className={styles.castLink} key={member.id} to={`/actors/${member.id}`}>
                   <div className={styles.castItem}>
-                    {profileUrl ? <img className={styles.castImage} src={profileUrl} alt={member.name} /> : <div className={styles.castImageFallback} />}
+                    <img
+                      className={styles.castImage}
+                      src={profileUrl}
+                      alt={member.name}
+                      onError={(e) => {
+                        e.currentTarget.src = imageFallbackPortrait;
+                      }}
+                    />
                     <div className={styles.castName}>{member.name}</div>
                     <div className={styles.castCharacter}>{member.character || "—"}</div>
                   </div>
