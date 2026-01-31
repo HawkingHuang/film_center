@@ -67,7 +67,15 @@ function Search() {
               return (
                 <Link key={`${item.media_type}-${item.id}`} className={styles.cardLink} to={linkTo}>
                   <div className={styles.card}>
-                    {imageUrl ? <img className={styles.poster} src={imageUrl} alt={titleText} loading="lazy" /> : <div className={styles.posterFallback} />}
+                    <img
+                      className={styles.poster}
+                      src={imageUrl}
+                      alt={titleText}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = imageFallbackPortrait;
+                      }}
+                    />
                     <div className={styles.cardTitle}>{titleText}</div>
                   </div>
                 </Link>

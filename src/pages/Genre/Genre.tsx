@@ -82,7 +82,15 @@ function Genre() {
               return (
                 <Link key={item.id} className={styles.cardLink} to={`/movies/${item.id}`}>
                   <div className={styles.card}>
-                    {imageUrl ? <img className={styles.poster} src={imageUrl} alt={titleText} loading="lazy" /> : <div className={styles.posterFallback} />}
+                    <img
+                      className={styles.poster}
+                      src={imageUrl}
+                      alt={titleText}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.currentTarget.src = imageFallbackPortrait;
+                      }}
+                    />
                     <div className={styles.cardTitle}>{titleText}</div>
                   </div>
                 </Link>

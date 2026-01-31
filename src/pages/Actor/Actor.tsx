@@ -10,6 +10,7 @@ import { Select } from "@radix-ui/themes";
 import * as Dialog from "@radix-ui/react-dialog";
 import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 import { useIsClamped } from "../../hooks/useIsClamped";
+import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
 
 function Actor() {
   const { id } = useParams();
@@ -177,11 +178,18 @@ function Actor() {
           {filteredCredits.length > 0 ? (
             filteredCredits.map((credit: ActorCredit) => {
               const posterPath = credit.poster_path || credit.backdrop_path || null;
-              const posterUrl = posterPath ? `${POSTER_BASE_URL}${posterPath}` : null;
+              const posterUrl = posterPath ? `${POSTER_BASE_URL}${posterPath}` : imageFallbackPortrait;
               return (
                 <Link key={credit.id} to={`/movies/${credit.id}`} className={styles.cardLink}>
                   <div className={styles.card}>
-                    {posterUrl ? <img className={styles.poster} src={posterUrl} alt={credit.title} /> : <div className={styles.posterFallback}>No poster</div>}
+                    <img
+                      className={styles.poster}
+                      src={posterUrl}
+                      alt={credit.title}
+                      onError={(e) => {
+                        e.currentTarget.src = imageFallbackPortrait;
+                      }}
+                    />
                     <div className={styles.cardTitle}>{credit.title}</div>
                     <div className={styles.creditMeta}>{credit.character || "—"}</div>
                   </div>

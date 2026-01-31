@@ -86,19 +86,15 @@ function User() {
                   return (
                     <Link key={item.movie_id} className={styles.cardLink} to={`/movies/${item.movie_id}`}>
                       <div className={styles.card}>
-                        {imageUrl ? (
-                          <img
-                            className={styles.poster}
-                            src={imageUrl}
-                            alt={item.title}
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.src = imageFallbackPortrait;
-                            }}
-                          />
-                        ) : (
-                          <div className={styles.posterFallback} />
-                        )}
+                        <img
+                          className={styles.poster}
+                          src={imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.src = imageFallbackPortrait;
+                          }}
+                        />
                         <div className={styles.cardTitle}>{item.title}</div>
                       </div>
                     </Link>
@@ -123,19 +119,15 @@ function User() {
                   return (
                     <Link key={item.movie_id} className={styles.cardLink} to={`/movies/${item.movie_id}`}>
                       <div className={styles.card}>
-                        {imageUrl ? (
-                          <img
-                            className={styles.poster}
-                            src={imageUrl}
-                            alt={item.title}
-                            loading="lazy"
-                            onError={(e) => {
-                              e.currentTarget.src = imageFallbackPortrait;
-                            }}
-                          />
-                        ) : (
-                          <div className={styles.posterFallback} />
-                        )}
+                        <img
+                          className={styles.poster}
+                          src={imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.src = imageFallbackPortrait;
+                          }}
+                        />
                         <div className={styles.cardTitle}>{item.title}</div>
                       </div>
                     </Link>

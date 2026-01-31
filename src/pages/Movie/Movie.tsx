@@ -13,6 +13,7 @@ import type { ToastPayload } from "../../types/toastTypes";
 import styles from "./Movie.module.scss";
 import { HeartIcon, Cross1Icon, CrossCircledIcon, OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import starIcon from "../../assets/images/star.svg";
+import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
 import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useIsClamped } from "../../hooks/useIsClamped";
@@ -52,7 +53,7 @@ function Movie() {
   });
 
   const posterUrl = useMemo(() => {
-    if (!data?.poster_path) return null;
+    if (!data?.poster_path) return imageFallbackPortrait;
     return `${POSTER_BASE_URL}${data.poster_path}`;
   }, [data?.poster_path]);
 
@@ -154,7 +155,14 @@ function Movie() {
     <div className="container">
       <section className={styles.topBlock}>
         <div className={styles.posterWrap}>
-          {posterUrl ? <img className={styles.poster} src={posterUrl} alt={data.title} /> : <div className={styles.posterFallback}>No poster</div>}
+          <img
+            className={styles.poster}
+            src={posterUrl}
+            alt={data.title}
+            onError={(e) => {
+              e.currentTarget.src = imageFallbackPortrait;
+            }}
+          />
           <button
             className={`${styles.addButton} ${isFavorited ? styles.favorited : ""}`}
             type="button"
@@ -286,12 +294,19 @@ function Movie() {
         <div className={styles.resultsGrid}>
           {(recommendations.length > 0 ? recommendations : Array.from({ length: 4 })).map((item, index) => {
             const rec = (item as MovieRecommendation | undefined) ?? undefined;
-            const recPoster = rec?.poster_path ? `${POSTER_BASE_URL}${rec.poster_path}` : null;
+            const recPoster = rec?.poster_path ? `${POSTER_BASE_URL}${rec.poster_path}` : imageFallbackPortrait;
             if (rec && rec.id) {
               return (
                 <Link key={rec.id} to={`/movies/${rec.id}`} className={styles.cardLink}>
                   <div className={styles.card}>
-                    {recPoster ? <img className={styles.poster} src={recPoster} alt={rec.title ?? "Recommendation"} /> : <div className={styles.posterFallback} />}
+                    <img
+                      className={styles.poster}
+                      src={recPoster}
+                      alt={rec.title ?? "Recommendation"}
+                      onError={(e) => {
+                        e.currentTarget.src = imageFallbackPortrait;
+                      }}
+                    />
                     <div className={styles.cardTitle}>{rec.title ?? "Recommendation"}</div>
                   </div>
                 </Link>
@@ -300,7 +315,14 @@ function Movie() {
 
             return (
               <div key={rec?.id ?? index} className={styles.card}>
-                {recPoster ? <img className={styles.poster} src={recPoster} alt={rec?.title ?? "Recommendation"} /> : <div className={styles.posterFallback} />}
+                <img
+                  className={styles.poster}
+                  src={recPoster}
+                  alt={rec?.title ?? "Recommendation"}
+                  onError={(e) => {
+                    e.currentTarget.src = imageFallbackPortrait;
+                  }}
+                />
                 <div className={styles.cardTitle}>{rec?.title ?? "Recommendation"}</div>
               </div>
             );
