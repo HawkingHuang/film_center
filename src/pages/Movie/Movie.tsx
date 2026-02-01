@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import * as Toast from "@radix-ui/react-toast";
 import { POSTER_BASE_URL, PROFILE_BASE_URL } from "../../lib/api";
-import { fetchMovieDetail, fetchRecommendations, fetchCredits, fetchVideos } from "../../utils/apiUtils";
-import { addToFavorites, checkIsFavorited, deleteFromFavorites } from "../../utils/favoritesUtils";
+import { addToFavorites, deleteFromFavorites } from "../../utils/favoritesUtils";
 import { formatRuntime, writeInRecentViewToLocalStorage } from "../../utils/commonUtils";
 import type { RecentMovie, MovieRecommendation } from "../../types/movieTypes";
 import type { RootState } from "../../store";
@@ -17,51 +16,42 @@ import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.p
 import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useIsClamped } from "../../hooks/useIsClamped";
+import { useCredits } from "../../hooks/useCredits";
+import { useMovieDetail } from "../../hooks/useMovieDetail";
+import { useRecommendations } from "../../hooks/useRecommendations";
+import { useVideos } from "../../hooks/useVideos";
+import { useCheckIsFavorited } from "../../hooks/useCheckIsFavorited";
 
 function Movie() {
+  // Routing + auth context
   const { id } = useParams();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+  // Local UI state
   const [toastOpen, setToastOpen] = useState(false);
   const [toastContent, setToastContent] = useState<ToastPayload | null>(null);
   const [isOverviewOpen, setIsOverviewOpen] = useState(false);
+
+  // Derived identifiers
   const movieId = useMemo(() => {
     const parsed = Number(id);
     return Number.isFinite(parsed) ? parsed : null;
   }, [id]);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["movie", id],
-    queryFn: () => fetchMovieDetail(id ?? ""),
-    enabled: Boolean(id),
-  });
-  const { ref: overviewRef, isClamped } = useIsClamped(data?.overview ?? "");
-  const { data: creditsData } = useQuery({
-    queryKey: ["movie", id, "credits"],
-    queryFn: () => fetchCredits(id ?? ""),
-    enabled: Boolean(id),
-  });
-  const { data: videosData } = useQuery({
-    queryKey: ["movie", id, "videos"],
-    queryFn: () => fetchVideos(id ?? ""),
-    enabled: Boolean(id),
-  });
-  const { data: recommendationsData } = useQuery({
-    queryKey: ["movie", id, "recommendations"],
-    queryFn: () => fetchRecommendations(id ?? ""),
-    enabled: Boolean(id),
-  });
+  // Data fetching
+  const { data, isLoading, isError } = useMovieDetail(id);
+  const { data: creditsData } = useCredits(id);
+  const { data: videosData } = useVideos(id);
+  const { data: recommendationsData } = useRecommendations(id);
+  const { data: isFavorited } = useCheckIsFavorited(movieId, isAuthenticated);
 
+  // Derived UI helpers
+  const { ref: overviewRef, isClamped } = useIsClamped(data?.overview ?? "");
   const posterUrl = useMemo(() => {
     if (!data?.poster_path) return imageFallbackPortrait;
     return `${POSTER_BASE_URL}${data.poster_path}`;
   }, [data?.poster_path]);
-
-  const { data: isFavorited } = useQuery({
-    queryKey: ["favorites", "isFavorited", movieId],
-    queryFn: () => checkIsFavorited(movieId as number),
-    enabled: Boolean(movieId) && isAuthenticated,
-  });
 
   const toggleFavoriteMutation = useMutation({
     mutationFn: async () => {
@@ -101,31 +91,22 @@ function Movie() {
     },
   });
 
-  const recommendations = useMemo(() => {
-    return recommendationsData?.results ?? [];
-  }, [recommendationsData]);
-
-  const castMembers = useMemo(() => {
-    return creditsData?.cast?.slice(0, 8) ?? [];
-  }, [creditsData]);
-
+  const recommendations = useMemo(() => recommendationsData?.results ?? [], [recommendationsData]);
+  const castMembers = useMemo(() => creditsData?.cast?.slice(0, 8) ?? [], [creditsData]);
   const directorName = useMemo(() => {
     const crew = creditsData?.crew ?? [];
     const director = crew.find((c) => (c.job ?? "").toLowerCase() === "director");
     return director?.name ?? "—";
   }, [creditsData]);
-
   const trailer = useMemo(() => {
     const videos = videosData?.results ?? [];
     const ytTrailers = videos.filter((v) => v.site === "YouTube" && v.type === "Trailer");
     const official = ytTrailers.find((v) => v.official === true);
     return official ?? ytTrailers[0] ?? null;
   }, [videosData]);
+  const trailerUrl = useMemo(() => (trailer ? `https://www.youtube.com/embed/${trailer.key}` : null), [trailer]);
 
-  const trailerUrl = useMemo(() => {
-    return trailer ? `https://www.youtube.com/embed/${trailer.key}` : null;
-  }, [trailer]);
-
+  // Automatically log recent view
   useEffect(() => {
     if (!data || !movieId) return;
 
@@ -275,10 +256,10 @@ function Movie() {
         </div>
       </section>
 
-      <section className={styles.middleBlock}>
-        <div className={styles.trailer}>
-          <div className={styles.trailerHeader}>Trailer</div>
-          {trailerUrl ? (
+      {trailerUrl && (
+        <section className={styles.middleBlock}>
+          <div className={styles.trailer}>
+            <div className={styles.trailerHeader}>Trailer</div>
             <div className={styles.trailerFrame}>
               <iframe
                 className={styles.trailerIframe}
@@ -290,19 +271,18 @@ function Movie() {
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </div>
-          ) : (
-            <div className={styles.trailerPlaceholder}>Trailer unavailable</div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
-      <section className={styles.recommendations}>
-        <h2 className={styles.recommendationsTitle}>Recommendations</h2>
-        <div className={styles.resultsGrid}>
-          {(recommendations.length > 0 ? recommendations : Array.from({ length: 4 })).map((item, index) => {
-            const rec = (item as MovieRecommendation | undefined) ?? undefined;
-            const recPoster = rec?.poster_path ? `${POSTER_BASE_URL}${rec.poster_path}` : imageFallbackPortrait;
-            if (rec && rec.id) {
+      {recommendations.length > 0 && (
+        <section className={styles.recommendations}>
+          <h2 className={styles.recommendationsTitle}>Recommendations</h2>
+          <div className={styles.resultsGrid}>
+            {recommendations.map((item) => {
+              const rec = (item as MovieRecommendation | undefined) ?? undefined;
+              const recPoster = rec?.poster_path ? `${POSTER_BASE_URL}${rec.poster_path}` : imageFallbackPortrait;
+              if (!rec || !rec.id) return null;
               return (
                 <Link key={rec.id} to={`/movies/${rec.id}`} className={styles.cardLink}>
                   <div className={styles.card}>
@@ -318,24 +298,10 @@ function Movie() {
                   </div>
                 </Link>
               );
-            }
-
-            return (
-              <div key={rec?.id ?? index} className={styles.card}>
-                <img
-                  className={styles.poster}
-                  src={recPoster}
-                  alt={rec?.title ?? "Recommendation"}
-                  onError={(e) => {
-                    e.currentTarget.src = imageFallbackPortrait;
-                  }}
-                />
-                <div className={styles.cardTitle}>{rec?.title ?? "Recommendation"}</div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+            })}
+          </div>
+        </section>
+      )}
       {toastContent && (
         <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
           <Toast.Title className="toastTitle">{toastContent.title}</Toast.Title>
