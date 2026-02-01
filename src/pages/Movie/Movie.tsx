@@ -6,7 +6,7 @@ import * as Toast from "@radix-ui/react-toast";
 import { BACKDROP_BASE_URL, POSTER_BASE_URL, PROFILE_BASE_URL } from "../../lib/api";
 import { addToFavorites, deleteFromFavorites } from "../../utils/favoritesUtils";
 import { formatRuntime, writeInRecentViewToLocalStorage } from "../../utils/commonUtils";
-import type { RecentMovie, MovieRecommendation } from "../../types/movieTypes";
+import type { RecentMovie } from "../../types/movieTypes";
 import type { RootState } from "../../store";
 import type { ToastPayload } from "../../types/toastTypes";
 import styles from "./Movie.module.scss";
@@ -22,6 +22,7 @@ import { useMovieDetail } from "../../hooks/useMovieDetail";
 import { useRecommendations } from "../../hooks/useRecommendations";
 import { useVideos } from "../../hooks/useVideos";
 import { useCheckIsFavorited } from "../../hooks/useCheckIsFavorited";
+import Recommendations from "../../components/Recommendations/Recommendations";
 
 function Movie() {
   // Routing + auth context
@@ -312,33 +313,7 @@ function Movie() {
         </section>
       )}
 
-      {recommendations.length > 0 && (
-        <section className={styles.recommendations}>
-          <h2 className={styles.recommendationsTitle}>Recommendations</h2>
-          <div className={styles.resultsGrid}>
-            {recommendations.map((item) => {
-              const rec = (item as MovieRecommendation | undefined) ?? undefined;
-              const recPoster = rec?.poster_path ? `${POSTER_BASE_URL}${rec.poster_path}` : imageFallbackPortrait;
-              if (!rec || !rec.id) return null;
-              return (
-                <Link key={rec.id} to={`/movies/${rec.id}`} className={styles.cardLink}>
-                  <div className={styles.card}>
-                    <img
-                      className={styles.poster}
-                      src={recPoster}
-                      alt={rec.title ?? "Recommendation"}
-                      onError={(e) => {
-                        e.currentTarget.src = imageFallbackPortrait;
-                      }}
-                    />
-                    <div className={styles.cardTitle}>{rec.title ?? "Recommendation"}</div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
+      {recommendations.length > 0 && <Recommendations recommendations={recommendations} />}
       {toastContent && (
         <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
           <Toast.Title className="toastTitle">{toastContent.title}</Toast.Title>

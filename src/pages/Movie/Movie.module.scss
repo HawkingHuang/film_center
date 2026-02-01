@@ -576,27 +576,3 @@
   }
 }
 
-.recommendations {
-  padding-bottom: 64px;
-
-  .recommendationsTitle {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--color-black);
-    margin-bottom: 16px;
-  }
-
-  @import "../../assets/styles/listLayout.module";
-
-  @include respond-xl {
-    padding-bottom: 72px;
-  }
-
-  @include respond-sm {
-    padding-bottom: 48px;
-  }
-
-  @include respond-xs {
-    padding-bottom: 48px;
-  }
-}
