@@ -31,7 +31,7 @@ function Signup() {
       state: {
         toast: {
           title: "Successfully Signed Up",
-          description: "Welcome to FilmHub.",
+          description: "Welcome to FilmHub",
         },
       },
     });
@@ -60,7 +60,6 @@ function Signup() {
         />
       </div>
       {error && <div className={styles.error}>{error}</div>}
-
     </AuthLayout>
   );
 }

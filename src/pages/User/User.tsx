@@ -76,7 +76,7 @@ function User() {
           </Tabs.List>
 
           <Tabs.Content className={styles.tabContent} value="favorites">
-            {isError && <div className={styles.state}>Unable to load favorites</div>}
+            {isError && <div className={styles.state}>Unable to load favorites.</div>}
             {!isLoading && !isError && favorites.length === 0 && <div className={styles.state}>No favorites yet</div>}
 
             {!isLoading && !isError && favorites.length > 0 && (

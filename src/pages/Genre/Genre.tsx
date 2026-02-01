@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import ResponsivePagination from "react-responsive-pagination";
@@ -9,6 +9,7 @@ import type { MovieGenre, TmdbMovie } from "../../types/genreTypes";
 import styles from "./Genre.module.scss";
 import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
 import { Select } from "@radix-ui/themes";
+import * as Toast from "@radix-ui/react-toast";
 
 function Genre() {
   const { id } = useParams();
@@ -30,11 +31,14 @@ function Genre() {
     enabled: Boolean(safeGenreId),
   });
 
-  const { data: genresData } = useQuery({
+  const { data: genresData, isError: isGenresError } = useQuery({
     queryKey: ["tmdb", "genres", "movie"],
     queryFn: fetchMovieGenres,
     staleTime: 1000 * 60 * 60 * 24,
   });
+
+  const [toastOpen, setToastOpen] = useState(false);
+  const [toastContent, setToastContent] = useState<{ title: string; description?: string } | null>(null);
 
   const genres = useMemo<MovieGenre[]>(() => genresData?.genres ?? [], [genresData]);
   const currentGenre = useMemo(() => genres.find((genre) => genre.id === safeGenreId), [genres, safeGenreId]);
@@ -52,26 +56,39 @@ function Genre() {
     navigate(`/genres/${nextGenreId}?page=1`);
   };
 
+  useEffect(() => {
+    if (!isGenresError) return;
+    queueMicrotask(() => {
+      setToastContent({
+        title: "Unable to Get Genres",
+        description: "Please reload the page",
+      });
+      setToastOpen(true);
+    });
+  }, [isGenresError]);
+
   return (
     <div className="container">
       <section className={styles.genre}>
-        <div className={styles.header}>
-          {currentGenre?.name && <p className={styles.title}>{currentGenre?.name}</p>}
-          <Select.Root value={String(safeGenreId)} onValueChange={handleGenreChange}>
-            <Select.Trigger className={styles.genreSelectTrigger} aria-label="Select genre" />
-            <Select.Content className={styles.genreSelectContent}>
-              {genres.map((genre) => (
-                <Select.Item key={genre.id} value={String(genre.id)}>
-                  {genre.name}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select.Root>
-        </div>
+        {!isGenresError && (
+          <div className={styles.header}>
+            {currentGenre?.name && <p className={styles.title}>{currentGenre?.name}</p>}
+            <Select.Root value={String(safeGenreId)} onValueChange={handleGenreChange}>
+              <Select.Trigger className={styles.genreSelectTrigger} aria-label="Select genre" />
+              <Select.Content className={styles.genreSelectContent}>
+                {genres.map((genre) => (
+                  <Select.Item key={genre.id} value={String(genre.id)}>
+                    {genre.name}
+                  </Select.Item>
+                ))}
+              </Select.Content>
+            </Select.Root>
+          </div>
+        )}
 
         {!safeGenreId && <div className={styles.state}>Invalid genre</div>}
         {isLoading && <div className={styles.state}>Loading results...</div>}
-        {isError && <div className={styles.state}>Unable to load results</div>}
+        {isError && <div className={styles.state}>Unable to load results.</div>}
         {!isLoading && !isError && safeGenreId > 0 && results.length === 0 && <div className={styles.state}>No results found</div>}
 
         {!isLoading && !isError && results.length > 0 && safeGenreId && (
@@ -105,6 +122,12 @@ function Genre() {
           </div>
         )}
       </section>
+      {toastContent && (
+        <Toast.Root className="toastRoot" open={toastOpen} onOpenChange={setToastOpen}>
+          <Toast.Title className={`${styles.toastTitleError} toastTitle`}>{toastContent.title}</Toast.Title>
+          {toastContent.description && <Toast.Description className="toastDescription">{toastContent.description}</Toast.Description>}
+        </Toast.Root>
+      )}
     </div>
   );
 }

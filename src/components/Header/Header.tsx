@@ -32,7 +32,7 @@ function Header() {
       state: {
         toast: {
           title: "Successfully Logged Out",
-          description: "You have been signed out.",
+          description: "You have been signed out",
         },
       },
     });

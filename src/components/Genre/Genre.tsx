@@ -91,6 +91,14 @@ function GenreRow({ title, endpoint, withGenres }: GenreRowProps) {
     };
   }, [imageUrls]);
 
+  if (isError) {
+    return (
+      <div className="container">
+        <div className={styles.state}>Unable to load movies.</div>
+      </div>
+    );
+  }
+
   return (
     <section className={styles.row}>
       <div className={styles.rowHeader}>

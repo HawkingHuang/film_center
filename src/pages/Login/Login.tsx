@@ -31,7 +31,7 @@ function Login() {
       state: {
         toast: {
           title: "Successfully Logged In",
-          description: "Welcome back.",
+          description: "Welcome back",
         },
       },
     });
@@ -60,7 +60,6 @@ function Login() {
         />
       </div>
       {error && <div className={styles.error}>{error}</div>}
-
     </AuthLayout>
   );
 }
