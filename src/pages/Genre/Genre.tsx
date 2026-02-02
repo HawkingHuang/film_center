@@ -10,6 +10,7 @@ import styles from "./Genre.module.scss";
 import imageFallbackPortrait from "../../assets/images/image_fallback_portrait.png";
 import { Select } from "@radix-ui/themes";
 import * as Toast from "@radix-ui/react-toast";
+import FullPageSpinner from "../../components/FullPageSpinner/FullPageSpinner";
 
 function Genre() {
   const { id } = useParams();
@@ -67,6 +68,10 @@ function Genre() {
     });
   }, [isGenresError]);
 
+  if (isLoading) {
+    return <FullPageSpinner />;
+  }
+
   return (
     <div className="container">
       <section className={styles.genre}>
@@ -87,7 +92,6 @@ function Genre() {
         )}
 
         {!safeGenreId && <div className={styles.state}>Invalid genre</div>}
-        {isLoading && <div className={styles.state}>Loading results...</div>}
         {isError && <div className={styles.state}>Unable to load results.</div>}
         {!isLoading && !isError && safeGenreId > 0 && results.length === 0 && <div className={styles.state}>No results found</div>}
 
