@@ -21,6 +21,7 @@ import { useRecommendations } from "../../hooks/useRecommendations";
 import { useVideos } from "../../hooks/useVideos";
 import { useCheckIsFavorited } from "../../hooks/useCheckIsFavorited";
 import { useToggleFavorite } from "../../hooks/useToggleFavorite";
+import Trailer from "../../components/Trailer/Trailer";
 import Recommendations from "../../components/Recommendations/Recommendations";
 
 function Movie() {
@@ -266,24 +267,7 @@ function Movie() {
         </div>
       </section>
 
-      {trailerUrl && (
-        <section className={styles.middleBlock}>
-          <div className={styles.trailer}>
-            <div className={styles.trailerHeader}>Trailer</div>
-            <div className={styles.trailerFrame}>
-              <iframe
-                className={styles.trailerIframe}
-                src={trailerUrl}
-                title={trailer?.name ?? `${data.title} trailer`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-              />
-            </div>
-          </div>
-        </section>
-      )}
+      {trailerUrl && <Trailer trailerUrl={trailerUrl} title={data.title} trailerName={trailer?.name} />}
 
       {recommendations.length > 0 && <Recommendations recommendations={recommendations} />}
       {toastContent && (
