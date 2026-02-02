@@ -1,12 +1,5 @@
 @use "../../assets/styles/mixins" as *;
 
-.state {
-  padding: 48px 0;
-  font-size: 18px;
-  color: var(--color-black);
-  text-align: center;
-}
-
 .topBlock {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -272,6 +265,11 @@
           }
         }
       }
+    }
+
+    @import "../../assets/styles/state.module";
+    .state {
+      margin-top: 20px;
     }
   }
 
@@ -575,4 +573,3 @@
     }
   }
 }
-

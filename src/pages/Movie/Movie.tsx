@@ -45,7 +45,7 @@ function Movie() {
 
   // Data fetching
   const { data, isLoading, isError } = useMovieDetail(id);
-  const { data: creditsData } = useCredits(id);
+  const { data: creditsData, isError: isCreditsError } = useCredits(id);
   const { data: videosData } = useVideos(id);
   const { data: recommendationsData } = useRecommendations(id);
   const { data: isFavorited } = useCheckIsFavorited(movieId, isAuthenticated);
@@ -270,27 +270,31 @@ function Movie() {
             </div>
           </div>
 
-          <div className={styles.castList}>
-            {castMembers.map((member) => {
-              const profileUrl = member.profile_path ? `${PROFILE_BASE_URL}${member.profile_path}` : imageFallbackPortrait;
-              return (
-                <Link className={styles.castLink} key={member.id} to={`/actors/${member.id}`}>
-                  <div className={styles.castItem}>
-                    <img
-                      className={styles.castImage}
-                      src={profileUrl}
-                      alt={member.name}
-                      onError={(e) => {
-                        e.currentTarget.src = imageFallbackPortrait;
-                      }}
-                    />
-                    <div className={styles.castName}>{member.name}</div>
-                    <div className={styles.castCharacter}>{member.character || "—"}</div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+          {isCreditsError ? (
+            <div className={styles.state}>Unable to load credits.</div>
+          ) : (
+            <div className={styles.castList}>
+              {castMembers.map((member) => {
+                const profileUrl = member.profile_path ? `${PROFILE_BASE_URL}${member.profile_path}` : imageFallbackPortrait;
+                return (
+                  <Link className={styles.castLink} key={member.id} to={`/actors/${member.id}`}>
+                    <div className={styles.castItem}>
+                      <img
+                        className={styles.castImage}
+                        src={profileUrl}
+                        alt={member.name}
+                        onError={(e) => {
+                          e.currentTarget.src = imageFallbackPortrait;
+                        }}
+                      />
+                      <div className={styles.castName}>{member.name}</div>
+                      <div className={styles.castCharacter}>{member.character || "—"}</div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
