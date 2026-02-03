@@ -1,4 +1,5 @@
 @use "../../assets/styles/mixins" as *;
+@use "../../assets/styles/listLayout.module" as *;
 
 .userPage {
   padding: 24px 0 64px;
@@ -56,8 +57,6 @@
     flex-direction: column;
     gap: 16px;
   }
-
-  @import "../../assets/styles/listLayout.module";
 
   @include respond-xl {
     padding: 32px 0 72px;

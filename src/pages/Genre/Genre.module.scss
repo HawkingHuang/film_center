@@ -1,4 +1,5 @@
 @use "../../assets/styles/mixins" as *;
+@use "../../assets/styles/listLayout.module" as *;
 
 .genre {
   padding: 24px 0 64px;
@@ -33,8 +34,6 @@
       max-height: 240px;
     }
   }
-  @import "../../assets/styles/listLayout.module";
-
   @include respond-md {
     gap: 20px;
   }

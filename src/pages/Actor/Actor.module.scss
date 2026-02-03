@@ -1,6 +1,6 @@
 @use "../../assets/styles/mixins" as *;
-
-@import "../../assets/styles/state.module";
+@use "../../assets/styles/state.module" as *;
+@use "../../assets/styles/listLayout.module" as *;
 
 .loadingSpinner {
   position: fixed !important;
@@ -280,8 +280,6 @@
       gap: 4px;
     }
   }
-
-  @import "../../assets/styles/listLayout.module";
 
   @include respond-xl {
     padding-bottom: 72px;

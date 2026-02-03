@@ -1,6 +1,5 @@
 @use "./mixins" as *;
-
-@import "./state.module";
+@use "./state.module" as *;
 
 .resultsGrid {
   display: grid;
